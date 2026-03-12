@@ -1,0 +1,39 @@
+@WebApplication4_HostAddress = https://localhost:7244
+
+
+GET {{WebApplication4_HostAddress}}/api/hotels
+
+###
+
+POST {{WebApplication4_HostAddress}}/api/hotels
+Content-Type: application/json
+
+{
+   "id": 6,
+  "hotelName": "Hotel C",
+  "rating": 3,
+  "address": "789 Oak St"
+}
+
+###
+
+@id=6
+DELETE {{WebApplication4_HostAddress}}/api/hotels/{{id}}
+
+###
+
+GET {{WebApplication4_HostAddress}}/api/hotels/{{id}}
+
+###
+
+PUT {{WebApplication4_HostAddress}}/api/hotels/{{id}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "hotelName": "Hotel AZ",
+  "rating": 5,
+  "address": "Mohali"
+}
+
+###
