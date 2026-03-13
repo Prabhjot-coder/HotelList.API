@@ -9,31 +9,38 @@ namespace WebApplication4.Controllers
     [ApiController] 
     public class HotelsController : ControllerBase
     {
-        //In-memory data store for hotels (for demonstration purposes)
-        private static List<Hotel> hotels = new List<Hotel>
+        //Dependency Injection of HotelRepository
+        // Constructor to inject the HotelRepository dependency into the controller
+
+        //Method Injection is a design pattern that allows you to inject dependencies into a class rather
+        //than creating them within the class itself.
+
+        //Property Injection is a design pattern that allows you to inject dependencies into a class through
+        //properties rather than through the constructor.
+        private readonly HotelRepository _hotelRepository;
+        public HotelsController(HotelRepository hotelRepository)
         {
-            new Hotel { Id = 1, HotelName = "Hotel A", Rating = 4, Address = "123 Main St" },
-            new Hotel { Id = 2, HotelName = "Hotel B", Rating = 5, Address = "456 Elm St" },
-            new Hotel { Id = 3, HotelName = "Hotel C", Rating = 3, Address = "789 Oak St" },
-            new Hotel { Id = 4, HotelName = "Hotel D", Rating = 2, Address = "321 Pine St" },
-        };
+            _hotelRepository = hotelRepository;
+        }
+
         // GET: api/<HotelsController>
         [HttpGet]
         public ActionResult<IEnumerable<Hotel>> Get()
         {
-            return hotels;
+            var hotels = _hotelRepository.GetAllHotels();
+            return Ok(hotels); // Return 200 OK with the list of hotels
         }
 
         // GET api/<HotelsController>/5
         [HttpGet("{id}")]
         public ActionResult<Hotel> Get(int id)
         {
-            var hotel = hotels.FirstOrDefault(h => h.Id == id);
+            var hotel = _hotelRepository.GetHotelById(id);
             if(hotel == null)
             {
                 return NotFound(); // Return 404 if the hotel is not found
             }
-            return hotel;
+            return Ok(hotel); // Return 200 OK with the hotel
         }
         //Post is to insert     data into the database,
         //Put is to update data in the database,
@@ -42,51 +49,33 @@ namespace WebApplication4.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] Hotel newHotel)
         {
-            if (newHotel == null)
-            {
-                return BadRequest(); // Return 400 if the request body is null
-            }
-            var hotel = hotels.FirstOrDefault(h => h.Id == newHotel.Id);
-            if (hotel != null)
-            {
-                return Conflict(); // Return 409 if a hotel with the same ID already exists
-            }
-            hotels.Add(newHotel);
-            return CreatedAtAction(nameof(Get), new { id = newHotel.Id }, newHotel);
+            var newHotelId = _hotelRepository.createHotel(newHotel);
+            return CreatedAtAction(nameof(Get), new { id = newHotelId }, newHotel);
         }
 
         // PUT api/<HotelsController>/5
         [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] Hotel updatedHotel)
         {
-            if(updatedHotel == null)
+            var existingHotel = _hotelRepository.GetHotelById(id);
+            if (existingHotel == null)
             {
-                return BadRequest();
+                return NotFound(); // Return 404 if the hotel is not found
             }
-            var hotel = hotels.FirstOrDefault(h=>h.Id == id);
-             if(hotel == null)
+            var updated = _hotelRepository.updateHotel(id, updatedHotel);
+            if(updated)
             {
-                return NotFound();
+                return Ok(updatedHotel);
             }
-            else
-            { 
-                hotel.HotelName = updatedHotel.HotelName;
-                hotel.Rating = updatedHotel.Rating;
-                hotel.Address = updatedHotel.Address;
-            }
-             return Ok();
+            return BadRequest("Update failed");
+             
         }
 
         // DELETE api/<HotelsController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            var hotel = hotels.FirstOrDefault(h => h.Id == id);
-            if (hotel == null)
-            {
-                return NotFound();
-            }
-            hotels.Remove(hotel);
+            _hotelRepository.deleteHotel(id);
             return NoContent();
         }
     }

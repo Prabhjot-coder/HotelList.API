@@ -9,7 +9,6 @@ POST {{WebApplication4_HostAddress}}/api/hotels
 Content-Type: application/json
 
 {
-   "id": 6,
   "hotelName": "Hotel C",
   "rating": 3,
   "address": "789 Oak St"
@@ -17,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-@id=6
+@id=7
 DELETE {{WebApplication4_HostAddress}}/api/hotels/{{id}}
 
 ###
@@ -30,7 +29,7 @@ PUT {{WebApplication4_HostAddress}}/api/hotels/{{id}}
 Content-Type: application/json
 
 {
-  "id": 6,
+  "id": 7,
   "hotelName": "Hotel AZ",
   "rating": 5,
   "address": "Mohali"
