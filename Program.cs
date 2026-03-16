@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication4.Data;
+
 namespace WebApplication4
 {
     public class Program
@@ -9,6 +12,9 @@ namespace WebApplication4
             // Add services to the container.
 
             builder.Services.AddControllers();
+            //Register the DbContext with the dependency injection container
+            builder.Services.AddDbContext<HotelContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -20,7 +26,12 @@ namespace WebApplication4
 
 
             app.MapControllers();
-
+            // Optional Auto-migrate database on application startup (use with caution in production)
+            using(var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<HotelContext>();
+                dbContext.Database.Migrate();// Automatically apply any pending migrations to the database
+            }
             app.Run();
         }
     }
