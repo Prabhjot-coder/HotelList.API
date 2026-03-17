@@ -1,31 +1,60 @@
-﻿namespace WebApplication4.Data
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace WebApplication4.Data
 {
     //Repository Pattern implementation for Hotel entity
     public class HotelRepository : IHotelRepository
     {
-        public Task<Hotel> AddNewHotel(Hotel newHotel)
+        private readonly HotelContext _context;
+        public HotelRepository(HotelContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<Hotel> AddNewHotel(Hotel newHotel)
+        {
+            _context.Hotels.Add(newHotel);
+            await _context.SaveChangesAsync();
+            return newHotel;
         }
 
-        public Task DeleteHotelById(int id)
+        public async Task<bool> DeleteHotelById(int id)
         {
-            throw new NotImplementedException();
+            var hotel = await _context.Hotels.FindAsync(id);
+            if (hotel != null)
+            {
+                _context.Hotels.Remove(hotel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
-        public Task<IEnumerable<Hotel>> GetAllHotels()
+        public async Task<IEnumerable<Hotel>> GetAllHotels()
         {
-            throw new NotImplementedException();
+            return await _context.Hotels.OrderBy(s=>s.HotelName).ToListAsync(); 
         }
 
-        public Task<Hotel> GetHotelById(int id)
+        public async Task<Hotel> GetHotelById(int id)
         {
-            throw new NotImplementedException();
+            var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            return hotel;
         }
 
-        public Task UpdateHotelInfo(Hotel updateHotel)
+        public async Task<Hotel> UpdateHotelInfo(int id, Hotel updateHotel)
         {
-            throw new NotImplementedException();
+           var existingHotel = await _context.Hotels.FindAsync(updateHotel.Id);
+            if (existingHotel != null)
+            {
+                existingHotel.HotelName = updateHotel.HotelName;
+                existingHotel.Rating = updateHotel.Rating;
+                existingHotel.Address = updateHotel.Address;
+                existingHotel.EmailAddress = updateHotel.EmailAddress;
+                existingHotel.CreatedDate = updateHotel.CreatedDate;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return existingHotel;
         }
     }
 }

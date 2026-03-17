@@ -5,8 +5,8 @@
         Task<IEnumerable<Hotel>> GetAllHotels();
         Task<Hotel> GetHotelById(int id);
         Task<Hotel> AddNewHotel(Hotel newHotel);
-        Task DeleteHotelById(int id);
-        Task UpdateHotelInfo(Hotel updateHotel);
+        Task<bool> DeleteHotelById(int id);
+        Task<Hotel> UpdateHotelInfo(int id,Hotel updateHotel);
                 
     }
 }

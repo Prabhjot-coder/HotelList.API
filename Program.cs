@@ -15,6 +15,8 @@ namespace WebApplication4
             //Register the DbContext with the dependency injection container
             builder.Services.AddDbContext<HotelContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // Register the repository with the dependency injection container
+            builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 
             var app = builder.Build();
 
@@ -27,11 +29,11 @@ namespace WebApplication4
 
             app.MapControllers();
             // Optional Auto-migrate database on application startup (use with caution in production)
-            using(var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<HotelContext>();
-                dbContext.Database.Migrate();// Automatically apply any pending migrations to the database
-            }
+            //using(var scope = app.Services.CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<HotelContext>();
+            //    dbContext.Database.Migrate();// Automatically apply any pending migrations to the database
+            //}
             app.Run();
         }
     }

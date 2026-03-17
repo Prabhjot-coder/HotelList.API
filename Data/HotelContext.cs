@@ -25,8 +25,8 @@ namespace WebApplication4.Data
                     HotelName = "Hotel A",
                     Rating = 4,
                     Address = "123 Main St",
-                    EmailAddress = "pkaur@gmail.com",
-                    CreatedDate = DateTime.Now
+                    EmailAddress = "pkaur@gmail.com"
+                   // CreatedDate = DateTime.Now
                 },
                 new Hotel
                 {
@@ -34,8 +34,8 @@ namespace WebApplication4.Data
                     HotelName = "Hotel B",
                     Rating = 5,
                     Address = "456 Main St",
-                    EmailAddress = "agam@gmail.com",
-                    CreatedDate = DateTime.Now
+                    EmailAddress = "agam@gmail.com"
+                  //  CreatedDate = DateTime.Now
 
                 });
 

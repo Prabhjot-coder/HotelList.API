@@ -9,31 +9,33 @@ POST {{WebApplication4_HostAddress}}/api/hotels
 Content-Type: application/json
 
 {
-   "id": 6,
   "hotelName": "Hotel C",
   "rating": 3,
-  "address": "789 Oak St"
+  "address": "789 Oak St",
+  "EmailAddress":"pkaur@tx.com"
 }
 
 ###
-
-@id=6
-DELETE {{WebApplication4_HostAddress}}/api/hotels/{{id}}
-
-###
-
+@id=3
 GET {{WebApplication4_HostAddress}}/api/hotels/{{id}}
 
 ###
+
+
 
 PUT {{WebApplication4_HostAddress}}/api/hotels/{{id}}
 Content-Type: application/json
 
 {
-  "id": 6,
+   "id": 3,
   "hotelName": "Hotel AZ",
   "rating": 5,
-  "address": "Mohali"
+  "address": "123 Oak St",
+  "emailAddress": "jkaur@tx.com",
+  "createdDate": "2026-12-12"
 }
+
+###
+DELETE {{WebApplication4_HostAddress}}/api/hotels/{{id}}
 
 ###
