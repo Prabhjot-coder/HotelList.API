@@ -6,6 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Exclude test project files from being compiled into the main project -->
+  <ItemGroup>
+    <Compile Remove="HotelList.API.Tests/**" />
+    <Content Remove="HotelList.API.Tests/**" />
+    <EmbeddedResource Remove="HotelList.API.Tests/**" />
+    <None Remove="HotelList.API.Tests/**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
