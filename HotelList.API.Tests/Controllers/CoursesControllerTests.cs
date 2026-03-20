@@ -27,8 +27,8 @@ public class CoursesControllerTests
     {
         _repoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<Course>
         {
-            new() { CourseId = 1, Title = "Math 101",    IsActive = true },
-            new() { CourseId = 2, Title = "Physics 101", IsActive = false }
+            new() { CourseId = 1, CourseName = "Math 101",    IsActive = true },
+            new() { CourseId = 2, CourseName = "Physics 101", IsActive = false }
         });
 
         var result = await _controller.GetAll();
@@ -43,7 +43,7 @@ public class CoursesControllerTests
     {
         _repoMock.Setup(r => r.GetActiveCourses()).ReturnsAsync(new List<Course>
         {
-            new() { CourseId = 1, Title = "Math 101", IsActive = true }
+            new() { CourseId = 1, CourseName = "Math 101", IsActive = true }
         });
 
         var result = await _controller.GetActive();
@@ -51,6 +51,17 @@ public class CoursesControllerTests
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeAssignableTo<IEnumerable<CourseDto>>()
           .Which.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsOk_WhenCourseExists()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(1))
+                 .ReturnsAsync(new Course { CourseId = 1, CourseName = "Math 101", IsActive = true });
+
+        var result = await _controller.GetById(1);
+
+        result.Should().BeOfType<OkObjectResult>();
     }
 
     [Fact]
@@ -66,13 +77,36 @@ public class CoursesControllerTests
     [Fact]
     public async Task Create_ReturnsCreatedAtAction()
     {
-        var dto    = new CreateCourseDto("Algebra", "Basic algebra", null);
-        var course = new Course { CourseId = 10, Title = "Algebra", IsActive = true };
+        var dto    = new CreateCourseDto("Algebra", null);
+        var course = new Course { CourseId = 10, CourseName = "Algebra", IsActive = true };
         _repoMock.Setup(r => r.AddAsync(It.IsAny<Course>())).ReturnsAsync(course);
 
         var result = await _controller.Create(dto);
 
         result.Should().BeOfType<CreatedAtActionResult>();
+    }
+
+    [Fact]
+    public async Task Update_ReturnsNoContent_WhenCourseExists()
+    {
+        var course = new Course { CourseId = 1, CourseName = "Old", IsActive = true };
+        _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(course);
+        _repoMock.Setup(r => r.UpdateAsync(It.IsAny<Course>())).Returns(Task.CompletedTask);
+
+        var result = await _controller.Update(1, new UpdateCourseDto("New", true, null));
+
+        result.Should().BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent_WhenExists()
+    {
+        _repoMock.Setup(r => r.ExistsAsync(1)).ReturnsAsync(true);
+        _repoMock.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+
+        var result = await _controller.Delete(1);
+
+        result.Should().BeOfType<NoContentResult>();
     }
 
     [Fact]
