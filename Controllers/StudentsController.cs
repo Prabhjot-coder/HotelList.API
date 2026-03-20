@@ -20,15 +20,17 @@ public class StudentsController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>Get all students</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<StudentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var students = await _repo.GetAllAsync();
-        var dtos = students.Select(s => new StudentDto(s.StudentId, s.FirstMidName, s.LastName, s.Email, s.CourseId));
+        var dtos = students.Select(s => new StudentDto(s.StudentId, s.FirstName, s.LastName, s.Email, s.CourseId));
         return Ok(dtos);
     }
 
+    /// <summary>Get student by ID</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,29 +38,41 @@ public class StudentsController : ControllerBase
     {
         var s = await _repo.GetByIdAsync(id);
         if (s is null) return NotFound();
-        return Ok(new StudentDto(s.StudentId, s.FirstMidName, s.LastName, s.Email, s.CourseId));
+        return Ok(new StudentDto(s.StudentId, s.FirstName, s.LastName, s.Email, s.CourseId));
     }
 
+    /// <summary>Get students by course</summary>
     [HttpGet("by-course/{courseId:int}")]
     [ProducesResponseType(typeof(IEnumerable<StudentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByCourse(int courseId)
     {
         var students = await _repo.GetStudentsByCourseAsync(courseId);
-        var dtos = students.Select(s => new StudentDto(s.StudentId, s.FirstMidName, s.LastName, s.Email, s.CourseId));
+        var dtos = students.Select(s => new StudentDto(s.StudentId, s.FirstName, s.LastName, s.Email, s.CourseId));
         return Ok(dtos);
     }
 
+    /// <summary>Create a new student</summary>
     [HttpPost]
     [ProducesResponseType(typeof(StudentDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateStudentDto dto)
     {
-        var student = new Student { FirstMidName = dto.FirstName, LastName = dto.LastName, Email = dto.Email, CourseId = dto.CourseId };
+        var student = new Student
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            CourseId = dto.CourseId,
+            EnrollDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow),
+            IsActive = true
+        };
         var created = await _repo.AddAsync(student);
-        var result = new StudentDto(created.StudentId, created.FirstMidName, created.LastName, created.Email, created.CourseId);
+        var result = new StudentDto(created.StudentId, created.FirstName, created.LastName, created.Email, created.CourseId);
         return CreatedAtAction(nameof(GetById), new { id = created.StudentId }, result);
     }
 
+    /// <summary>Update a student</summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,7 +80,7 @@ public class StudentsController : ControllerBase
     {
         var student = await _repo.GetByIdAsync(id);
         if (student is null) return NotFound();
-        student.FirstMidName = dto.FirstName;
+        student.FirstName = dto.FirstName;
         student.LastName = dto.LastName;
         student.Email = dto.Email;
         student.CourseId = dto.CourseId;
@@ -74,6 +88,7 @@ public class StudentsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Delete a student</summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
