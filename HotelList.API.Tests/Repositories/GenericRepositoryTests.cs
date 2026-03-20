@@ -21,12 +21,12 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(AddAsync_ShouldPersistEntityAndReturnWithId));
         var repo = new GenericRepository<Department>(ctx);
-        var dept = new Department { Name = "Computer Science", IsActive = true };
+        var dept = new Department { DepartmentName = "Computer Science", IsActive = true };
 
         var result = await repo.AddAsync(dept);
 
         result.DepartmentId.Should().BeGreaterThan(0);
-        result.Name.Should().Be("Computer Science");
+        result.DepartmentName.Should().Be("Computer Science");
     }
 
     [Fact]
@@ -34,12 +34,12 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(GetByIdAsync_ReturnsCorrectEntity));
         var repo = new GenericRepository<Department>(ctx);
-        var added = await repo.AddAsync(new Department { Name = "Physics", IsActive = true });
+        var added = await repo.AddAsync(new Department { DepartmentName = "Physics", IsActive = true });
 
         var found = await repo.GetByIdAsync(added.DepartmentId);
 
         found.Should().NotBeNull();
-        found!.Name.Should().Be("Physics");
+        found!.DepartmentName.Should().Be("Physics");
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(GetAllAsync_ReturnsAllEntities));
         var repo = new GenericRepository<Department>(ctx);
-        await repo.AddAsync(new Department { Name = "Math", IsActive = true });
-        await repo.AddAsync(new Department { Name = "Biology", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "Math", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "Biology", IsActive = true });
 
         var result = await repo.GetAllAsync();
 
@@ -71,13 +71,13 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(UpdateAsync_ModifiesEntity));
         var repo = new GenericRepository<Department>(ctx);
-        var dept = await repo.AddAsync(new Department { Name = "Old Name", IsActive = true });
+        var dept = await repo.AddAsync(new Department { DepartmentName = "Old Name", IsActive = true });
 
-        dept.Name = "New Name";
+        dept.DepartmentName = "New Name";
         await repo.UpdateAsync(dept);
 
         var updated = await repo.GetByIdAsync(dept.DepartmentId);
-        updated!.Name.Should().Be("New Name");
+        updated!.DepartmentName.Should().Be("New Name");
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(DeleteAsync_RemovesEntity));
         var repo = new GenericRepository<Department>(ctx);
-        var dept = await repo.AddAsync(new Department { Name = "ToDelete", IsActive = true });
+        var dept = await repo.AddAsync(new Department { DepartmentName = "ToDelete", IsActive = true });
 
         await repo.DeleteAsync(dept.DepartmentId);
 
@@ -97,7 +97,7 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(ExistsAsync_ReturnsTrue_WhenExists));
         var repo = new GenericRepository<Department>(ctx);
-        var dept = await repo.AddAsync(new Department { Name = "Exists", IsActive = true });
+        var dept = await repo.AddAsync(new Department { DepartmentName = "Exists", IsActive = true });
 
         (await repo.ExistsAsync(dept.DepartmentId)).Should().BeTrue();
     }
@@ -116,9 +116,9 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(CountAsync_ReturnsCorrectCount));
         var repo = new GenericRepository<Department>(ctx);
-        await repo.AddAsync(new Department { Name = "A", IsActive = true });
-        await repo.AddAsync(new Department { Name = "B", IsActive = true });
-        await repo.AddAsync(new Department { Name = "C", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "A", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "B", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "C", IsActive = true });
 
         (await repo.CountAsync()).Should().Be(3);
     }
@@ -128,9 +128,9 @@ public class GenericRepositoryTests
     {
         using var ctx = CreateContext(nameof(FindAsync_ReturnsMatchingEntities));
         var repo = new GenericRepository<Department>(ctx);
-        await repo.AddAsync(new Department { Name = "Active1", IsActive = true });
-        await repo.AddAsync(new Department { Name = "Inactive", IsActive = false });
-        await repo.AddAsync(new Department { Name = "Active2", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "Active1", IsActive = true });
+        await repo.AddAsync(new Department { DepartmentName = "Inactive", IsActive = false });
+        await repo.AddAsync(new Department { DepartmentName = "Active2", IsActive = true });
 
         var active = await repo.FindAsync(d => d.IsActive == true);
 
