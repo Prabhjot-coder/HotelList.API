@@ -78,7 +78,7 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public void Login_ReturnsFullName_InResponse()
+    public void Login_ReturnsCorrectFullName_InResponse()
     {
         var email = $"full_{Guid.NewGuid()}@test.com";
         _controller.Register(new RegisterDto("Jane", "Doe", email, "P@ssword1!"));
@@ -87,8 +87,8 @@ public class AuthControllerTests
 
         var result = _controller.Login(new LoginDto(email, "P@ssword1!"));
 
-        var ok       = result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = ok.Value.Should().BeOfType<AuthResponseDto>().Subject;
+        var response = result.Should().BeOfType<OkObjectResult>().Subject
+                             .Value.Should().BeOfType<AuthResponseDto>().Subject;
         response.FullName.Should().Be("Jane Doe");
     }
 
@@ -102,8 +102,8 @@ public class AuthControllerTests
 
         var result = _controller.Login(new LoginDto(email, "P@ssword1!"));
 
-        var ok       = result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = ok.Value.Should().BeOfType<AuthResponseDto>().Subject;
+        var response = result.Should().BeOfType<OkObjectResult>().Subject
+                             .Value.Should().BeOfType<AuthResponseDto>().Subject;
         response.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
     }
 }
