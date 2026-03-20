@@ -27,8 +27,10 @@ public class StudentsControllerTests
     {
         _repoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<Student>
         {
-            new() { StudentId = 1, FirstMidName = "Alice", LastName = "Brown", Email = "alice@t.com" },
-            new() { StudentId = 2, FirstMidName = "Bob",   LastName = "Green", Email = "bob@t.com"   }
+            new() { StudentId = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@t.com",
+                    DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) },
+            new() { StudentId = 2, FirstName = "Bob",   LastName = "Green", Email = "bob@t.com",
+                    DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) }
         });
 
         var result = await _controller.GetAll();
@@ -41,8 +43,9 @@ public class StudentsControllerTests
     [Fact]
     public async Task GetById_ReturnsOk_WhenStudentExists()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(1))
-                 .ReturnsAsync(new Student { StudentId = 1, FirstMidName = "Alice", LastName = "B", Email = "a@t.com" });
+        _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(
+            new Student { StudentId = 1, FirstName = "Alice", LastName = "B", Email = "a@t.com",
+                          DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) });
 
         var result = await _controller.GetById(1);
 
@@ -64,7 +67,8 @@ public class StudentsControllerTests
     {
         _repoMock.Setup(r => r.GetStudentsByCourseAsync(5)).ReturnsAsync(new List<Student>
         {
-            new() { StudentId = 3, FirstMidName = "Carol", LastName = "White", Email = "c@t.com", CourseId = 5 }
+            new() { StudentId = 3, FirstName = "Carol", LastName = "White", Email = "c@t.com",
+                    CourseId = 5, DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) }
         });
 
         var result = await _controller.GetByCourse(5);
@@ -78,7 +82,8 @@ public class StudentsControllerTests
     public async Task Create_ReturnsCreatedAtAction_WithNewStudent()
     {
         var dto     = new CreateStudentDto("Tom", "Hanks", "tom@t.com", null);
-        var student = new Student { StudentId = 5, FirstMidName = "Tom", LastName = "Hanks", Email = "tom@t.com" };
+        var student = new Student { StudentId = 5, FirstName = "Tom", LastName = "Hanks", Email = "tom@t.com",
+                                    DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) };
         _repoMock.Setup(r => r.AddAsync(It.IsAny<Student>())).ReturnsAsync(student);
 
         var result = await _controller.Create(dto);
@@ -91,7 +96,8 @@ public class StudentsControllerTests
     [Fact]
     public async Task Update_ReturnsNoContent_WhenStudentExists()
     {
-        var student = new Student { StudentId = 1, FirstMidName = "Old", LastName = "Name", Email = "old@t.com" };
+        var student = new Student { StudentId = 1, FirstName = "Old", LastName = "Name", Email = "old@t.com",
+                                    DateOfBirth = new DateOnly(2000,1,1), EnrollDate = new DateOnly(2022,9,1) };
         _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(student);
         _repoMock.Setup(r => r.UpdateAsync(It.IsAny<Student>())).Returns(Task.CompletedTask);
 
