@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
 namespace WebApplication4
 {
     public class Program
@@ -9,6 +12,8 @@ namespace WebApplication4
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<Data.SchoolContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
