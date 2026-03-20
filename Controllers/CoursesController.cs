@@ -20,23 +20,26 @@ public class CoursesController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>Get all courses</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CourseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var courses = await _repo.GetAllAsync();
-        var dtos = courses.Select(c => new CourseDto(c.CourseId, c.Title, c.Description, c.IsActive, c.TeacherId));
+        var dtos = courses.Select(c => new CourseDto(c.CourseId, c.CourseName, c.IsActive, c.TeacherId));
         return Ok(dtos);
     }
 
+    /// <summary>Get active courses only</summary>
     [HttpGet("active")]
     public async Task<IActionResult> GetActive()
     {
         var courses = await _repo.GetActiveCourses();
-        var dtos = courses.Select(c => new CourseDto(c.CourseId, c.Title, c.Description, c.IsActive, c.TeacherId));
+        var dtos = courses.Select(c => new CourseDto(c.CourseId, c.CourseName, c.IsActive, c.TeacherId));
         return Ok(dtos);
     }
 
+    /// <summary>Get course by ID</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -44,19 +47,21 @@ public class CoursesController : ControllerBase
     {
         var c = await _repo.GetByIdAsync(id);
         if (c is null) return NotFound();
-        return Ok(new CourseDto(c.CourseId, c.Title, c.Description, c.IsActive, c.TeacherId));
+        return Ok(new CourseDto(c.CourseId, c.CourseName, c.IsActive, c.TeacherId));
     }
 
+    /// <summary>Create a new course</summary>
     [HttpPost]
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateCourseDto dto)
     {
-        var course = new Course { Title = dto.Title, Description = dto.Description, TeacherId = dto.TeacherId, IsActive = true };
+        var course = new Course { CourseName = dto.CourseName, TeacherId = dto.TeacherId, IsActive = true };
         var created = await _repo.AddAsync(course);
-        var result = new CourseDto(created.CourseId, created.Title, created.Description, created.IsActive, created.TeacherId);
+        var result = new CourseDto(created.CourseId, created.CourseName, created.IsActive, created.TeacherId);
         return CreatedAtAction(nameof(GetById), new { id = created.CourseId }, result);
     }
 
+    /// <summary>Update a course</summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,14 +69,14 @@ public class CoursesController : ControllerBase
     {
         var course = await _repo.GetByIdAsync(id);
         if (course is null) return NotFound();
-        course.Title = dto.Title;
-        course.Description = dto.Description;
+        course.CourseName = dto.CourseName;
         course.IsActive = dto.IsActive;
         course.TeacherId = dto.TeacherId;
         await _repo.UpdateAsync(course);
         return NoContent();
     }
 
+    /// <summary>Delete a course</summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
