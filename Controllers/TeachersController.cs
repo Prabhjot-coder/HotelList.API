@@ -20,6 +20,7 @@ public class TeachersController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>Get all teachers</summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TeacherDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
@@ -29,6 +30,7 @@ public class TeachersController : ControllerBase
         return Ok(dtos);
     }
 
+    /// <summary>Get teacher by ID</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(TeacherDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,6 +41,7 @@ public class TeachersController : ControllerBase
         return Ok(new TeacherDto(t.TeacherId, t.FirstName, t.LastName, t.Email, t.IsActive, t.DepartmentId));
     }
 
+    /// <summary>Get teachers by department</summary>
     [HttpGet("by-department/{departmentId:int}")]
     public async Task<IActionResult> GetByDepartment(int departmentId)
     {
@@ -47,16 +50,26 @@ public class TeachersController : ControllerBase
         return Ok(dtos);
     }
 
+    /// <summary>Create a new teacher</summary>
     [HttpPost]
     [ProducesResponseType(typeof(TeacherDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateTeacherDto dto)
     {
-        var teacher = new Teacher { FirstName = dto.FirstName, LastName = dto.LastName, Email = dto.Email, DepartmentId = dto.DepartmentId, IsActive = true };
+        var teacher = new Teacher
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            DepartmentId = dto.DepartmentId,
+            HireDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            IsActive = true
+        };
         var created = await _repo.AddAsync(teacher);
         var result = new TeacherDto(created.TeacherId, created.FirstName, created.LastName, created.Email, created.IsActive, created.DepartmentId);
         return CreatedAtAction(nameof(GetById), new { id = created.TeacherId }, result);
     }
 
+    /// <summary>Update a teacher</summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,6 +86,7 @@ public class TeachersController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Delete a teacher</summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
