@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebApplication4.ConfigurationClass;
+using WebApplication4.CustomMiddlewares;
 using WebApplication4.Data;
 
 namespace WebApplication4
@@ -17,6 +19,11 @@ namespace WebApplication4
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             // Register the repository with the dependency injection container
             builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+
+            builder.Services.Configure<EmailSettings>(
+                builder.Configuration.GetSection(EmailSettings.SectionName));
+
+            builder.Services.AddTransient<RequestLoggingMiddleware>();
 
             var app = builder.Build();
 
